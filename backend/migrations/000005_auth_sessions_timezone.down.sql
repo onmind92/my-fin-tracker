@@ -1,0 +1,4 @@
+DROP TABLE IF EXISTS sessions;
+DROP INDEX IF EXISTS users_email_lower_unique;
+ALTER TABLE users DROP COLUMN IF EXISTS timezone, DROP COLUMN IF EXISTS display_name, DROP COLUMN IF EXISTS password_hash, DROP COLUMN IF EXISTS email;
+

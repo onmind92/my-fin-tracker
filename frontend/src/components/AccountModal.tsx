@@ -1,0 +1,13 @@
+import { useState } from 'react'
+import { X } from 'lucide-react'
+import type { AccountType } from '../api/types'
+
+export function AccountModal({ onClose, onSubmit }: { onClose: () => void; onSubmit: (data: { name: string; type: AccountType; currency: 'RUB'; opening_balance_minor: number }) => Promise<void> }) {
+  const [name, setName] = useState(''); const [type, setType] = useState<AccountType>('card'); const [balance, setBalance] = useState('0'); const [error, setError] = useState(''); const [saving, setSaving] = useState(false)
+  async function submit(e: React.FormEvent) { e.preventDefault(); if (!name.trim()) { setError('Укажите название счёта'); return }; const value = Number(balance.replace(',', '.')); if (!Number.isFinite(value)) { setError('Укажите корректный баланс'); return }; setSaving(true); try { await onSubmit({ name: name.trim(), type, currency: 'RUB', opening_balance_minor: Math.round(value * 100) }) } catch (err) { setError(err instanceof Error ? err.message : 'Не удалось создать счёт'); setSaving(false) } }
+  return <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/35 p-0 backdrop-blur-[2px] sm:items-center sm:p-6" onMouseDown={(e) => e.target === e.currentTarget && onClose()}><form onSubmit={submit} className="w-full max-w-md rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl">
+    <div className="mb-6 flex items-center justify-between"><h2 className="text-xl font-bold">Новый счёт</h2><button type="button" onClick={onClose} className="rounded-xl p-2 text-slate-500 hover:bg-slate-100"><X size={20}/></button></div>
+    <div className="space-y-4"><label><span className="label">Название</span><input autoFocus className="field" value={name} onChange={(e) => setName(e.target.value)} placeholder="Основная карта" /></label><label><span className="label">Тип</span><select className="field" value={type} onChange={(e) => setType(e.target.value as AccountType)}><option value="card">Карта</option><option value="cash">Наличные</option><option value="savings">Накопления</option><option value="investment">Инвестиции</option><option value="other">Другой</option></select></label><label><span className="label">Начальный баланс, ₽</span><input className="field" inputMode="decimal" value={balance} onChange={(e) => setBalance(e.target.value)} /></label></div>
+    {error && <p className="mt-4 rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</p>}<button disabled={saving} className="mt-6 w-full rounded-xl bg-forest px-4 py-3.5 text-sm font-semibold text-white disabled:opacity-50">{saving ? 'Создаём…' : 'Создать счёт'}</button>
+  </form></div>
+}

@@ -1,0 +1,11 @@
+.env
+backend/.env
+frontend/.env
+frontend/node_modules/
+frontend/dist/
+*.tsbuildinfo
+*.log
+backups/
+*.dump
+*.backup
+.DS_Store
